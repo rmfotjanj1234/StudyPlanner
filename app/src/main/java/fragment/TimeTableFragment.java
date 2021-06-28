@@ -43,7 +43,7 @@ public class TimeTableFragment extends Fragment {
     public CalendarView calendarView;
     public TextView selectTextView;
     public String selectDate;
-    Dialog dilaog01;
+    Dialog addDialog;
     TextView[][] textViewList;
     Map<String, String> dayMap;
     Map<String, String> timeMap;
@@ -106,9 +106,9 @@ public class TimeTableFragment extends Fragment {
             timeMap.put(timeName[i], Arr[i]);
         }
 
-        dilaog01 = new Dialog(getContext());       // Dialog 초기화
-        dilaog01.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
-        dilaog01.setContentView(R.layout.dialog_addsubject);
+        addDialog = new Dialog(getContext());       // Dialog 초기화
+        addDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
+        addDialog.setContentView(R.layout.dialog_addsubject);
 
         Button addButton = view.findViewById(R.id.addButton);
         addButton.setOnClickListener(onClickListener);
@@ -121,19 +121,18 @@ public class TimeTableFragment extends Fragment {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.addButton:
-                    showDialog01();
+                    showAddDialog();
                     break;
             }
         }
     };
 
-    // dialog01을 디자인하는 함수
-    public void showDialog01(){
-        dilaog01.show();
+    public void showAddDialog(){
+        addDialog.show();
 
-        daySpinner = dilaog01.findViewById(R.id.daySpinner);
-        startTimeSpinner = dilaog01.findViewById(R.id.startTimeSpinner);
-        finishTimeSpinner = dilaog01.findViewById(R.id.finishTimeSpinner);
+        daySpinner = addDialog.findViewById(R.id.daySpinner);
+        startTimeSpinner = addDialog.findViewById(R.id.startTimeSpinner);
+        finishTimeSpinner = addDialog.findViewById(R.id.finishTimeSpinner);
         daySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
@@ -171,15 +170,15 @@ public class TimeTableFragment extends Fragment {
             }
         });
 
-        Button negativeButton = dilaog01.findViewById(R.id.negativeButton);
+        Button negativeButton = addDialog.findViewById(R.id.negativeButton);
         negativeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dilaog01.dismiss(); // 다이얼로그 닫기
+                addDialog.dismiss(); // 다이얼로그 닫기
             }
         });
         // 네 버튼
-        Button positiveButton = dilaog01.findViewById(R.id.positiveButton);
+        Button positiveButton = addDialog.findViewById(R.id.positiveButton);
         positiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -191,7 +190,7 @@ public class TimeTableFragment extends Fragment {
                 for(int i = startTimeNum; i < finishTimeNum; i++){
                     textViewList[i][dayNum].setBackgroundColor(Color.GREEN);
                 }
-                dilaog01.dismiss(); // 다이얼로그 닫기
+                addDialog.dismiss(); // 다이얼로그 닫기
             }
         });
     }
