@@ -1,26 +1,41 @@
 package fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.GridLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.studyplanner.R;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import activity.BottomSheetDialog;
+
+import static com.example.studyplanner.Util.showToast;
 
 public class TimeTableFragment extends Fragment {
     private FragmentActivity myContext;
@@ -28,6 +43,12 @@ public class TimeTableFragment extends Fragment {
     public CalendarView calendarView;
     public TextView selectTextView;
     public String selectDate;
+    Dialog dilaog01;
+    TextView[][] textViewList;
+    Map<String, String> dayMap;
+    Map<String, String> timeMap;
+    String day, startTime, finishTime;
+    Spinner daySpinner, startTimeSpinner, finishTimeSpinner;
 
     BottomSheetDialog bottomSheetDialog;
 
@@ -65,15 +86,114 @@ public class TimeTableFragment extends Fragment {
                 {R.id.tv160, R.id.tv161, R.id.tv162, R.id.tv163, R.id.tv164, R.id.tv165},
                 {R.id.tv170, R.id.tv171, R.id.tv172, R.id.tv173, R.id.tv174, R.id.tv175},
                 {R.id.tv180, R.id.tv181, R.id.tv182, R.id.tv183, R.id.tv184, R.id.tv185}};
-        TextView[][] textViewList = new TextView[19][6];
+        textViewList = new TextView[19][6];
 
         for(int i = 0; i < 19; i++){
             for(int j = 0; j < 6; j++){
                 textViewList[i][j] = view.findViewById(IDArray[i][j]);
             }
         }
+        dayMap = new HashMap<String, String>();
+        String [] Arr = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"};
+        String [] dayName = {"월요일", "화요일", "수요일", "목요일", "금요일"};
+        for(int i = 0; i < dayName.length; i++){
+            dayMap.put(dayName[i], Arr[i]);
+        }
+
+        timeMap = new HashMap<String, String>();
+        String [] timeName = {"9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "1:00", "1:30", "2:00", "2:30", "3:00", "3:30", "4:00", "4:30", "5:00", "5:30"};
+        for(int i = 0; i < timeName.length; i++){
+            timeMap.put(timeName[i], Arr[i]);
+        }
+
+        dilaog01 = new Dialog(getContext());       // Dialog 초기화
+        dilaog01.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
+        dilaog01.setContentView(R.layout.dialog_addsubject);
+
+        Button addButton = view.findViewById(R.id.addButton);
+        addButton.setOnClickListener(onClickListener);
 
         return view;
+    }
+
+    View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.addButton:
+                    showDialog01();
+                    break;
+            }
+        }
+    };
+
+    // dialog01을 디자인하는 함수
+    public void showDialog01(){
+        dilaog01.show();
+
+        daySpinner = dilaog01.findViewById(R.id.daySpinner);
+        startTimeSpinner = dilaog01.findViewById(R.id.startTimeSpinner);
+        finishTimeSpinner = dilaog01.findViewById(R.id.finishTimeSpinner);
+        daySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                day = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        startTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                startTime = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        finishTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                finishTime = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        Button negativeButton = dilaog01.findViewById(R.id.negativeButton);
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dilaog01.dismiss(); // 다이얼로그 닫기
+            }
+        });
+        // 네 버튼
+        Button positiveButton = dilaog01.findViewById(R.id.positiveButton);
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int dayNum, startTimeNum, finishTimeNum;
+                dayNum = Integer.parseInt(dayMap.get(day));
+                startTimeNum = Integer.parseInt(timeMap.get(startTime));
+                finishTimeNum = Integer.parseInt(timeMap.get(finishTime));
+
+                for(int i = startTimeNum; i < finishTimeNum; i++){
+                    textViewList[i][dayNum].setBackgroundColor(Color.GREEN);
+                }
+                dilaog01.dismiss(); // 다이얼로그 닫기
+            }
+        });
     }
 
     @Override
