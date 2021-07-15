@@ -12,6 +12,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Studyplanner">
+
+        <receiver
+            android:name="activity.AlarmBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name="activity.AlarmIntentService"
+            android:exported="false" />
+
         <activity android:name="activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,9 +29,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="activity.SignUpActivity"></activity>
-        <activity android:name="activity.LoginActivity"></activity>
-        <activity android:name="activity.PasswordResetActivity"></activity>
+        <activity android:name="activity.SignUpActivity" />
+        <activity android:name="activity.LoginActivity" />
+        <activity android:name="activity.PasswordResetActivity" />
     </application>
 
 </manifest>
